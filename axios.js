@@ -26,12 +26,12 @@ const API_KEY = 'live_qmNyw6IveiNDKI8TzJqqYiIJ4nuuMhd5GPclueh3hKeSXtsCJlQ2X38hsT
 
 async function initialLoad() {
     try {
-        //  const response = await axios('https://api.thecatapi.com/v1/breeds');
+          const response = await axios('https://api.thecatapi.com/v1/breeds');
         //  console.log(response);  // Check the response structure
 
-        const response =await axios.get('breeds', {
-            ondownloadProgress: updateProgress
-        })
+        // const response =await axios.get('breeds', {
+        //     ondownloadProgress: updateProgress
+        // })
 
          const data = response.data;  
         // console.log(data); 
@@ -83,15 +83,17 @@ breedSelect.addEventListener("change", retrieveBreed);
 
     // Fetch breed details
     let breedURL = `https://api.thecatapi.com/v1/breeds/${selectedBreed}`;
-    const breedResponse = await axios.get(`breeds/${selectedBreed}`,{
-        onDownloadProgress: updateProgress});
+    const breedResponse = await axios.get(`breeds/${selectedBreed}`);
+    // const breedResponse = await axios.get(`breeds/${selectedBreed}`,{
+    //     onDownloadProgress: updateProgress});
    // const breedResponse = await fetch(breedURL);
     const breedData =  breedResponse.data;
   
     let imageURL = `https://api.thecatapi.com/v1/images/search?breed_ids=${selectedBreed}`;
-    const imageResponse = await axios.get(`images/search?breed_ids=${selectedBreed}`, {
-        onDownloadProgress: updateProgress
-    });
+    const imageResponse = await axios.get(`images/search?breed_ids=${selectedBreed}`); 
+    // const imageResponse = await axios.get(`images/search?breed_ids=${selectedBreed}`, {
+    //     onDownloadProgress: updateProgress
+    // });
    // const imageResponse = await fetch(imageURL); 
     const imageData = imageResponse.data;
 
