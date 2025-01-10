@@ -94,9 +94,11 @@ breedSelect.addEventListener("change", retrieveBreed);
       <p>${breedData.description}</p>    
     `;
 
-  } catch (error) {
+  } 
+  catch (error) {
     console.error( error);
-    //console.log(hi);
+  
+
   }
 }
 
