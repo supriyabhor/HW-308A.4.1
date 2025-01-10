@@ -25,8 +25,9 @@ const API_KEY = 'live_qmNyw6IveiNDKI8TzJqqYiIJ4nuuMhd5GPclueh3hKeSXtsCJlQ2X38hsT
 
 async function initialLoad() {
   try {
-       const res = await fetch('https://api.thecatapi.com/v1/breeds');
-       const data = await res.json();
+      const res = await fetch('https://api.thecatapi.com/v1/breeds');
+      //const res =await axios('https://api.thecatapi.com/v1/breeds');
+       //const data = await res.json();
        console.log(data);
 
        for (const breed of data)
@@ -111,6 +112,8 @@ For the Assignment Submission, submit the GitHub repo with the code where you us
 NOTE: If you want, you can also choose to just comment out the line with the fetch() and underneath it create a new line that uses axios instead.
 For Step 5, 6 and 7 which mention interceptors, be sure to review the section on interceptors from module 308A lesson 4, and today's recording.
  */
+
+
 /**
  * 4. Change all of your fetch() functions to axios!
  * - axios has already been imported for you within index.js.
