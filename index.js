@@ -103,7 +103,13 @@ breedSelect.addEventListener("change", retrieveBreed);
 }
 
 /**
- * For Step 3 
+ * For Step 3 of the Lab which wants you to fork the CodeSandbox that you're working in, presuming you successfully migrated your code over to VS Code, we're going to do something different instead.
+Once you reach Step 3, go ahead and push your code up to this point up to a new GitHub repository
+After successfully pushing your code, git clone the repository to create a copy of it
+In the cloned repo, replace any GET requests done using fetch() with axios instead and continue the rest of the lab from there. Push this new code to a new GitHub repository
+For the Assignment Submission, submit the GitHub repo with the code where you used axios. In the comment of the submission feel free to include the URL to the first repo that was using fetch
+NOTE: If you want, you can also choose to just comment out the line with the fetch() and underneath it create a new line that uses axios instead.
+For Step 5, 6 and 7 which mention interceptors, be sure to review the section on interceptors from module 308A lesson 4, and today's recording.
  */
 /**
  * 4. Change all of your fetch() functions to axios!
