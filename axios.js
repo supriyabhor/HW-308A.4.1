@@ -1,4 +1,5 @@
 import * as Carousel from './Carousel.js';
+
 // You have axios, you don't need to import it
 console.log(axios);
 
@@ -14,6 +15,8 @@ const getFavouritesBtn = document.getElementById('getFavouritesBtn');
 // Step 0: Store your API key here for reference and easy access.
 const API_KEY = 'live_qmNyw6IveiNDKI8TzJqqYiIJ4nuuMhd5GPclueh3hKeSXtsCJlQ2X38hsTchPWYn';
 
+  
+
 /**
  * 1. Create an async function "initialLoad" that does the following:
  * - Retrieve a list of breeds from the cat API using fetch().
@@ -26,15 +29,15 @@ const API_KEY = 'live_qmNyw6IveiNDKI8TzJqqYiIJ4nuuMhd5GPclueh3hKeSXtsCJlQ2X38hsT
 
 async function initialLoad() {
     try {
-          const response = await axios('https://api.thecatapi.com/v1/breeds');
-        //  console.log(response);  // Check the response structure
+         const response = await axios.get('https://api.thecatapi.com/v1/breeds');
+          console.log(response);  // Check the response structure
 
         // const response =await axios.get('breeds', {
         //     ondownloadProgress: updateProgress
         // })
 
          const data = response.data;  
-        // console.log(data); 
+         console.log(data); 
          //const data = await response.json();
   
   
@@ -44,7 +47,9 @@ async function initialLoad() {
           option.setAttribute("value", breed.id);
           option.textContent = breed.name;
           breedSelect.append(option);
+
          }
+       
      retrieveBreed();
 
     }catch (err){
@@ -77,29 +82,31 @@ breedSelect.addEventListener("change", retrieveBreed);
  async function retrieveBreed() {
   const selectedBreed = breedSelect.value;
  
+
+ 
   try {
     // Clear previous carousel images and info
     Carousel.clear();
 
     // Fetch breed details
-    let breedURL = `https://api.thecatapi.com/v1/breeds/${selectedBreed}`;
-    const breedResponse = await axios.get(`breeds/${selectedBreed}`);
-    // const breedResponse = await axios.get(`breeds/${selectedBreed}`,{
-    //     onDownloadProgress: updateProgress});
-   // const breedResponse = await fetch(breedURL);
-    const breedData =  breedResponse.data;
+    let breedURL = (`https://api.thecatapi.com/v1/breeds/${selectedBreed}`);
+    const breedResponse = await axios.get(breedURL);
+
+   const breedData =  breedResponse.data;
+   
+    let imageURL = (`https://api.thecatapi.com/v1/images/search?breed_ids=${selectedBreed}`);
+
+    const imageResponse = await axios.get('https://api.thecatapi.com/v1/images/search', {
+        onDownloadProgress: updateProgress  // Pass the updateProgress function to onDownloadProgress
+      });
+  //  const imageResponse = await axios.get(imageURL); 
   
-    let imageURL = `https://api.thecatapi.com/v1/images/search?breed_ids=${selectedBreed}`;
-    const imageResponse = await axios.get(`images/search?breed_ids=${selectedBreed}`); 
-    // const imageResponse = await axios.get(`images/search?breed_ids=${selectedBreed}`, {
-    //     onDownloadProgress: updateProgress
-    // });
-   // const imageResponse = await fetch(imageURL); 
     const imageData = imageResponse.data;
 
     // Loop through the images and append them to the carousel
     imageData.forEach(image => {
-      const imageItem = Carousel.createCarouselItem(image.url, `Image of ${breedData.name}`);
+      const imageItem = Carousel.createCarouselItem(image.url);
+
       Carousel.appendCarousel(imageItem);
     });
 
@@ -112,9 +119,8 @@ breedSelect.addEventListener("change", retrieveBreed);
     `;
 
   } 
-  catch (error) {
-    console.error( error);
-  
+  catch (err) {
+     console.error( err);
 
   }
 }
@@ -129,6 +135,7 @@ NOTE: If you want, you can also choose to just comment out the line with the fet
 For Step 5, 6 and 7 which mention interceptors, be sure to review the section on interceptors from module 308A lesson 4, and today's recording.
  */
 
+//DONE 
 
 /**
  * 4. Change all of your fetch() functions to axios!
@@ -140,7 +147,7 @@ For Step 5, 6 and 7 which mention interceptors, be sure to review the section on
  *   send it manually with all of your requests! You can also set a default base URL!
  */
 
-
+//DONE
 
 /**
  * 5. Add axios interceptors to log the time between request and response to the console.
@@ -148,6 +155,9 @@ For Step 5, 6 and 7 which mention interceptors, be sure to review the section on
  * - Add a console.log statement to indicate when requests begin.
  * - As an added challenge, try to do this on your own without referencing the lesson material.
  */
+
+
+
 axios.interceptors.request.use(request => {
     request.metadata = request.metadata || {};
     request.metadata.startTime = new Date().getTime();
@@ -187,44 +197,64 @@ axios.interceptors.response.use(
  *   with for future projects.
  */
 
-axios.interceptors.request.use(request => {
-    // Reset the progress bar width to 0 at the start of every request
-    const progressBar = document.getElementById('progressBar');
-    progressBar.style.width = '0%';
+    function updateProgress(event) {
+        // Calculate the progress percentage
+        const progress = Math.round((event.loaded / event.total) * 100);
+        
+        // Log the loaded and total bytes for debugging
+        console.log('Loaded:', event.loaded, 'Total:', event.total);
+        document.getElementById('progressBar').style.width = progress + '%';
+        console.log('Progress:', progress + '%');
+        console.log('ProgressEvent:', event);
+      }
+      
+      // Request interceptor to reset the progress bar before each request
+      axios.interceptors.request.use((config) => {
+        console.log('Reset progress bar to 0% ');
+        document.getElementById('progressBar').style.width = '0%';
 
-    // Store the start time before the request is sent
-    request.startTime = Date.now();
-    console.log(`Request to ${request.url} started at ${new Date(request.startTime).toISOString()}`);
-    return request;
-}, error => {
-    return Promise.reject(error);
-});
+     // In your request interceptor, set the body element's cursor style to "progress."
+     document.body.style.cursor = 'progress';
 
-// Interceptor to log response time
-axios.interceptors.response.use(response => {
-    // Calculate the time it took for the request/response cycle
-    const duration = Date.now() - response.config.startTime;
-    console.log(`Response from ${response.config.url} received in ${duration}ms`);
-    return response;
-}, error => {
-    // If there's an error, log it
-    if (error.config && error.config.startTime) {
-        const duration = Date.now() - error.config.startTime;
-        console.log(`Request to ${error.config.url} failed after ${duration}ms`);
-    }
-    return Promise.reject(error);
-});
-
-// Function to update the progress bar width based on ProgressEvent
-function updateProgress(progressEvent) {
-    if (progressEvent.total) {
-        const progress = (progressEvent.loaded / progressEvent.total) * 100;
-        const progressBar = document.getElementById('progressBar');
-        progressBar.style.width = `${progress}%`;
-        console.log(`Progress: ${progress}%`);
-    }
-}
-
+        return config;
+      
+      }, (error) => {
+        console.error('Request Interceptor Error:', error);
+        return Promise.reject(error);
+      });
+      
+      //In your response interceptor, remove the progress cursor style from the body element.
+    
+            axios.interceptors.response.use((response) => {
+            // Reset the cursor to "default" after the request finishes
+            console.log('Request finished, resetting cursor style');
+            document.body.style.cursor = 'default';
+            
+            return response;
+        
+            }, (error) => {
+            // Reset the cursor to "default" in case of an error as well
+            console.error('Request failed, resetting cursor style');
+            document.body.style.cursor = 'default';
+            
+            return Promise.reject(error);
+            });
+    
+        async function fetchCatImages() {
+            console.log('Starting request to fetch cat images...');   
+            try {
+            // Axios request with onDownloadProgress handler
+            const response = await axios.get('https://api.thecatapi.com/v1/images/search', {
+                onDownloadProgress: updateProgress 
+            });
+        
+            console.log('Request finished:', response);
+            } catch (error) {
+            console.error('Request failed:', error);
+            }
+        }
+        fetchCatImages();
+    
 
 /**
  * 7. As a final element of progress indication, add the following to your axios interceptors:
